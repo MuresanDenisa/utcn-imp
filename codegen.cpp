@@ -177,10 +177,14 @@ void Codegen::LowerExpr(const Scope &scope, const Expr &expr)
     case Expr::Kind::CALL: {
       return LowerCallExpr(scope, static_cast<const CallExpr &>(expr));
     }
+    //lab1
+    case Expr::Kind::INT: {
+      return EmitInt(expr);
+    }
   }
 }
 
-// -----------------------------------------------------------------------------
+
 void Codegen::LowerRefExpr(const Scope &scope, const RefExpr &expr)
 {
   auto binding = scope.Lookup(expr.GetName());
@@ -208,6 +212,10 @@ void Codegen::LowerBinaryExpr(const Scope &scope, const BinaryExpr &binary)
   switch (binary.GetKind()) {
     case BinaryExpr::Kind::ADD: {
       return EmitAdd();
+    }
+    case BinaryExpr::Kind::SUB:
+    {
+      return EmitSub();
     }
   }
 }
@@ -262,7 +270,14 @@ void Codegen::Emit(const T &t)
   code_.resize(offset + sizeof(T));
   memcpy(code_.data() + offset, &t, sizeof(T));
 }
+// -----------------------------------------------------------------------------
+// emit opcode and integer, increase stack => lab1
 
+void Codegen::EmitInt(const Expr &expr) {
+  depth_ += 1;
+  Emit<Opcode>(Opcode::PUSH_INT);
+  Emit<int64_t>(static_cast<const IntExpr &>(expr).GetInt());
+}
 // -----------------------------------------------------------------------------
 void Codegen::EmitLabel(Label label)
 {
@@ -313,7 +328,6 @@ void Codegen::EmitPushProto(RuntimeFn fn)
   Emit<Opcode>(Opcode::PUSH_PROTO);
   Emit<RuntimeFn>(fn);
 }
-
 // -----------------------------------------------------------------------------
 void Codegen::EmitPeek(uint32_t index)
 {
@@ -321,7 +335,13 @@ void Codegen::EmitPeek(uint32_t index)
   Emit<Opcode>(Opcode::PEEK);
   Emit<uint32_t>(index);
 }
-
+// -----------------------------------------------------------------------------
+void Codegen::EmitPushInt(uint64_t val)
+{
+  depth_ += 1;
+  Emit<Opcode>(Opcode::PUSH_INT);
+  Emit<uint64_t>(val);
+}
 // -----------------------------------------------------------------------------
 void Codegen::EmitReturn()
 {
@@ -338,6 +358,13 @@ void Codegen::EmitAdd()
   assert(depth_ > 0 && "no elements on stack");
   depth_ -= 1;
   Emit<Opcode>(Opcode::ADD);
+}
+//------------------------------------------------------------------------------
+void Codegen::EmitSub()
+{
+  assert(depth_ > 0 && "no elements on stack");
+  depth_ -= 1;
+  Emit<Opcode>(Opcode::SUB);
 }
 
 // -----------------------------------------------------------------------------

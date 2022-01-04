@@ -45,6 +45,7 @@ private:
       uint32_t Index;
       RuntimeFn Fn;
       Label Entry;
+      uint64_t val;
     };
 
     Binding() {}
@@ -135,6 +136,9 @@ private:
   /// Create a new label.
   Label MakeLabel();
 
+
+  /// Emit int.
+  void EmitInt(const Expr &expr);
   /// Emit a pop instruction.
   void EmitPop();
   /// Emit a call instruction.
@@ -145,10 +149,14 @@ private:
   void EmitPushProto(RuntimeFn fn);
   /// Push the nth value from the stack to the top.
   void EmitPeek(uint32_t index);
+  /// Push the int value on the stack.
+  void EmitPushInt(uint64_t val);
   /// Emit a return instruction.
   void EmitReturn();
   /// Emit an add opcode.
   void EmitAdd();
+  /// Emit a sub opcode.
+  void EmitSub();
   /// Emit a label.
   void EmitLabel(Label label);
   /// Emit a conditional jump.

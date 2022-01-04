@@ -30,6 +30,11 @@ void Interp::Run()
         Pop();
         continue;
       }
+      //evaluation rules for new opcode => lab 1
+      case Opcode::PUSH_INT: {
+        Push(prog_.Read<uint64_t>(pc_));
+        continue;
+      }
       case Opcode::CALL: {
         auto callee = Pop();
         switch (callee.Kind) {
@@ -54,6 +59,14 @@ void Interp::Run()
         Push(lhs + rhs);
         continue;
       }
+
+      case Opcode::SUB: {
+        auto rhs = PopInt();
+        auto lhs = PopInt();
+        Push(lhs - rhs);
+        continue;
+      }
+
       case Opcode::RET: {
         auto depth = prog_.Read<unsigned>(pc_);
         auto nargs = prog_.Read<unsigned>(pc_);

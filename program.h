@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
-#include <ostream>
 
 
 
@@ -16,6 +15,8 @@
 enum class Opcode : uint8_t {
   PUSH_FUNC,
   PUSH_PROTO,
+  // opcode to push a constant at the top of the stak => lab 1
+  PUSH_INT,
 
   PEEK,
   POP,
@@ -23,16 +24,12 @@ enum class Opcode : uint8_t {
 
   ADD,
   RET,
+  SUB,
 
   JUMP_FALSE,
   JUMP,
   STOP
 };
-
-/**
- * Prints the opcode to a stream, for debugging.
- */
-std::ostream &operator<<(std::ostream &os, Opcode op);
 
 
 /**

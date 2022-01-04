@@ -74,7 +74,6 @@ public:
   int64_t PopInt()
   {
     auto v = Pop();
-    assert(v.Kind == Value::Kind::INT);
     return v.Val.Int;
   }
 
